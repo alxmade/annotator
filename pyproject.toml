@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ai-annotator"
+version = "0.1.0"
+description = "AI-powered code documentation agent"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "annotator contributors" }]
+keywords = ["documentation", "ai", "cli", "openapi", "docstrings"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Documentation",
+]
+dependencies = [
+    "anthropic>=0.40.0",
+    "typer>=0.12.0",
+    "rich>=13.0.0",
+    "ruamel.yaml>=0.18.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+]
+
+[project.scripts]
+annotator = "annotator.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/annotator-dev/annotator"
+Repository = "https://github.com/annotator-dev/annotator"
+Issues = "https://github.com/annotator-dev/annotator/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["annotator"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

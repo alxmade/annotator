@@ -1,0 +1,8 @@
+- id: annotator
+  name: annotator
+  description: AI-powered documentation generator for Python and TypeScript/JS files
+  language: python
+  entry: annotator run --staged
+  types: [python, ts, javascript]
+  additional_dependencies: ["ai-annotator"]
+  pass_filenames: false
