@@ -19,13 +19,13 @@ No API keys. No pip install. No CLI. Just Claude Code.
 Inside Claude Code, run:
 
 ```
-/plugin install annotator@LuisAlejandro2003
+/plugin install annotator@alxmade
 ```
 
 Or add this marketplace and install from it:
 
 ```
-/plugin marketplace add LuisAlejandro2003/annotator
+/plugin marketplace add alxmade/annotator
 ```
 
 ## Usage
