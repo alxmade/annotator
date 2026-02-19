@@ -1,0 +1,10 @@
+{
+  "name": "annotator",
+  "description": "AI-powered code documentation agent. Detects undocumented functions and API endpoints in Python and TypeScript/JS. Generates docstrings, JSDoc, and updates OpenAPI/Postman specs.",
+  "version": "1.0.0",
+  "author": {
+    "name": "alxmade"
+  },
+  "license": "MIT",
+  "keywords": ["documentation", "ai", "openapi", "docstrings", "jsdoc"]
+}

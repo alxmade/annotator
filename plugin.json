@@ -1,9 +1,0 @@
-{
-  "name": "annotator",
-  "version": "1.0.0",
-  "description": "AI-powered code documentation agent. Analyzes Python and TypeScript/JS files and generates missing docstrings, JSDoc, OpenAPI, and Postman specs.",
-  "author": "alxmade",
-  "repository": "https://github.com/alxmade/annotator",
-  "license": "MIT",
-  "skills": ["skills/annotator"]
-}

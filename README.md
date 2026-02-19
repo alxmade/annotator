@@ -16,17 +16,15 @@ No API keys. No pip install. No CLI. Just Claude Code.
 
 ## Installation
 
-Inside Claude Code, run:
-
-```
-/plugin install annotator@alxmade
-```
-
-Or add this marketplace and install from it:
+Inside Claude Code, run these two commands:
 
 ```
 /plugin marketplace add alxmade/annotator
+/plugin install annotator@alxmade
 ```
+
+The first command registers the marketplace (only needed once).
+The second installs the plugin.
 
 ## Usage
 
