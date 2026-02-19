@@ -1,0 +1,10 @@
+{
+  "name": "annotator",
+  "plugins": [
+    {
+      "name": "annotator",
+      "description": "AI-powered code documentation agent for Python and TypeScript/JS. Detects undocumented functions and API endpoints, generates docstrings and JSDoc, and updates OpenAPI/Postman specs.",
+      "repo": "LuisAlejandro2003/annotator"
+    }
+  ]
+}
