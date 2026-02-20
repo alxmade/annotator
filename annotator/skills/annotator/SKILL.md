@@ -331,6 +331,100 @@ Leave blank to use http://localhost:3000
 
 Use ALL endpoints collected in Step 2. Infer as much as possible from the source code.
 
+---
+
+**STOP — before writing a single line of the spec, complete these 3 steps in order. Do not skip any. Do not write the file until all 3 are done.**
+
+**REQUIRED STEP A — operationId for every operation**
+Every single operation in `paths` MUST have a unique `operationId`. No exceptions.
+Generate it now for every endpoint before building the spec:
+- GET /api/users → `getUsers`
+- GET /api/users/{id} → `getUserById`
+- POST /api/users → `createUser`
+- PUT /api/users/{id} → `updateUserById`
+- PATCH /api/users/{id} → `patchUserById`
+- DELETE /api/users/{id} → `deleteUserById`
+- GET /api/auth/callback → `handleAuthCallback`
+- POST /api/meli/sync-products → `syncMeliProducts`
+Rule: HTTP verb + last 1–2 meaningful path segments in camelCase. Must be unique across the whole spec.
+
+**REQUIRED STEP B — security scheme**
+Run this search:
+```bash
+grep -r "supabase\|createServerClient\|getServerSession\|nextauth\|jwt\.verify\|bearerToken\|x-api-key\|Authorization" \
+  --include="*.ts" --include="*.js" --include="*.py" -l \
+  --exclude-dir=node_modules --exclude-dir=dist 2>/dev/null
+```
+Map to scheme:
+- Supabase (`createServerClient`, `createClient` from `@supabase/ssr`) → `cookieAuth` (apiKey in cookie `sb-access-token`)
+- NextAuth (`getServerSession`) → `cookieAuth` (apiKey in cookie `next-auth.session-token`)
+- JWT / Bearer (`jwt.verify`, `Authorization: Bearer`) → `bearerAuth` (http, bearer, JWT)
+- API Key (`x-api-key` header) → `apiKeyAuth` (apiKey in header `X-API-Key`)
+- Nothing found → omit `security` but still add an empty `components.securitySchemes: {}`
+
+Add the detected scheme to `components.securitySchemes` AND add `"security": [{ "<schemeName>": [] }]` at the root level of the spec.
+
+**REQUIRED STEP C — components section**
+The spec MUST include a `components` section with at minimum:
+```json
+"components": {
+  "securitySchemes": { ... },
+  "responses": {
+    "Unauthorized": {
+      "description": "Authentication required.",
+      "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+    },
+    "NotFound": {
+      "description": "Resource not found.",
+      "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+    },
+    "BadRequest": {
+      "description": "Invalid or missing request parameters.",
+      "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+    },
+    "InternalError": {
+      "description": "Internal server error.",
+      "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+    }
+  },
+  "schemas": {
+    "ErrorResponse": {
+      "type": "object",
+      "required": ["error"],
+      "properties": {
+        "error": { "type": "string", "description": "Error code or short identifier." },
+        "message": { "type": "string", "description": "Human-readable error description." }
+      }
+    }
+  }
+}
+```
+Then in every path operation, replace plain error responses with `$ref`:
+- `"401": { "$ref": "#/components/responses/Unauthorized" }`
+- `"404": { "$ref": "#/components/responses/NotFound" }`
+- `"400": { "$ref": "#/components/responses/BadRequest" }`
+- `"500": { "$ref": "#/components/responses/InternalError" }`
+
+Also scan TypeScript interfaces and Pydantic models to extract reusable schemas:
+```bash
+grep -rn "^export interface\|^export type.*=.*{" \
+  --include="*.ts" --include="*.tsx" -l --exclude-dir=node_modules 2>/dev/null
+```
+For each interface found that appears in 2 or more route handlers: add it to `components.schemas` and reference it with `$ref` in the relevant response bodies.
+
+**PRE-WRITE CHECKLIST — verify before writing the file:**
+- [ ] Every operation has a unique `operationId`
+- [ ] Root-level `security` array is present (or explicitly omitted with justification)
+- [ ] `components.securitySchemes` is defined
+- [ ] `components.responses` has Unauthorized, NotFound, BadRequest, InternalError
+- [ ] `components.schemas` has at minimum `ErrorResponse`
+- [ ] All 401/404/400/500 responses use `$ref` not plain text
+- [ ] `tags` array at root level has every tag used in operations, each with a `description`
+
+If any item is unchecked, fix it before writing.
+
+---
+
 #### Detect auth scheme
 Search for auth middleware patterns:
 ```bash
