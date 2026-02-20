@@ -425,41 +425,13 @@ If any item is unchecked, fix it before writing.
 
 ---
 
-#### Detect auth scheme
-Search for auth middleware patterns:
-```bash
-grep -r "supabase\|nextauth\|jwt\|passport\|bearerAuth\|apiKey\|Authorization" \
-  --include="*.ts" --include="*.js" --include="*.py" -l \
-  --exclude-dir=node_modules 2>/dev/null
-```
-
-Map detected patterns to OpenAPI security schemes:
-- Supabase → `cookieAuth` (apiKey in cookie `sb-access-token`)
-- NextAuth → `cookieAuth` (apiKey in cookie `next-auth.session-token`)
-- JWT / Bearer → `bearerAuth` (http, bearer, JWT)
-- API Key header → `apiKeyAuth` (apiKey in header `X-API-Key`)
-- No auth detected → omit security
-
 #### Detect reusable schemas
 Scan TypeScript interfaces and Pydantic models:
 ```bash
 grep -r "^export interface\|^export type\|^class.*BaseModel" \
   --include="*.ts" --include="*.py" -l --exclude-dir=node_modules 2>/dev/null
 ```
-Read matched files and extract the top 10 most-referenced types. Define them under `components/schemas`.
-
-#### Generate operationId
-For each operation, generate a camelCase operationId:
-- GET /api/users → `getUsers`
-- GET /api/users/{id} → `getUserById`
-- POST /api/users → `createUser`
-- PUT /api/users/{id} → `updateUserById`
-- PATCH /api/users/{id} → `patchUserById`
-- DELETE /api/users/{id} → `deleteUserById`
-- GET /api/auth/callback → `handleAuthCallback`
-- POST /api/meli/sync-products → `syncMeliProducts`
-
-Rule: take the last 1–2 meaningful path segments, remove the `api/` prefix, camelCase the result, prefix with the HTTP verb.
+Read matched files and extract the top 10 most-referenced types. Define them under `components/schemas` and replace inline schema objects with `$ref`.
 
 #### Generate tags
 Group endpoints by their first meaningful path segment after `/api/`:
